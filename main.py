@@ -1,10 +1,13 @@
 from dotenv import load_dotenv
+import fastapi
 from pydantic import BaseModel
 from langchain.agents import create_agent
 from pathlib import Path
+from fastapi import FastAPI
 from tools import web_seacrh
 import os
 
+app = FastAPI()
 
 load_dotenv()
 
@@ -15,6 +18,9 @@ class NotesStructure(BaseModel):
     examples: str
     rememberPoints: str
     reference:str
+    
+class topicRequest(BaseModel):
+    topic:str
 
 
 
@@ -28,12 +34,11 @@ agent =  agent = create_agent(
         response_format=NotesStructure,
     )
 
-query = "Transformers in AI"
-
-
-
-try:
-    response = agent.invoke({"messages": {"role":"user", "content":f"{query}"}})
-    print(response["structured_response"])
-except Exception as e:
-    print("Response cannot be fetched")
+@app.post("/internal/topic/")
+def create_notes(topic:topicRequest):
+    try:
+        response = agent.invoke({"messages": {"role":"user", "content":f"{topic.topic}"}})
+        print(response["structured_response"])
+        return response["structured_response"]
+    except Exception as e:
+        print(f"Response cannot be fetched: {e}")
