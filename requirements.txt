@@ -1,7 +1,8 @@
 langchain 
 langchain-community 
-langchain-ollama 
 python-dotenv
 pydantic
-duckduckgo-search
 beautifulsoup4
+langchain-google-genai
+ddgs
+fastapi
